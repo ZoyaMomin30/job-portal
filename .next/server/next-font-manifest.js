@@ -1,0 +1,1 @@
+self.__NEXT_FONT_MANIFEST="{\"pages\":{},\"app\":{\"/Users/aveis/Downloads/saa-s-landing-page (1)/app/layout\":[\"static/media/5b01f339abf2f1a5.p.woff2\",\"static/media/028c0d39d2e8f589-s.p.woff2\"],\"/Users/aveis/Downloads/saa-s-landing-page (1)/app/page\":[\"static/media/e4af272ccee01ff0-s.p.woff2\"]},\"appUsingSizeAdjust\":true,\"pagesUsingSizeAdjust\":false}"
