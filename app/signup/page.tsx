@@ -8,8 +8,12 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { supabase } from "@/lib/supabase/client"
+import {useRouter } from 'next/navigation'
+
 
 export default function SignupPage() {
+  const router = useRouter()
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -18,6 +22,7 @@ export default function SignupPage() {
     confirmPassword: "",
   })
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
@@ -27,16 +32,64 @@ export default function SignupPage() {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (formData.password !== formData.confirmPassword) {
-      console.log("[v0] Password mismatch")
+    e.preventDefault()  //prevent page reload 
+
+      if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match")
       return
     }
+
+    if (!formData.role) {
+      setError("Please select a role")
+      return
+    }
+
     setIsLoading(true)
-    // Simulate signup process
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    setIsLoading(false)
-    console.log("[v0] Signup attempt:", formData)
+    setError(null)
+
+    // const supabase = createClient()
+
+    try {
+      // const { data, error } = await supabase.auth.signUp({
+      //   email: formData.email,
+      //   password: formData.password,
+      //   options: {
+      //     data: {
+      //       full_name: formData.name,
+      //       user_type: formData.role, // "job_seeker" or "recruiter"
+      //     },
+      //   },
+      // })
+      
+      const { data, error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+      })
+
+      if (error || !data.user) {
+        alert(error?.message)
+        return
+      }
+
+        const { error: profileError } = await supabase.from("profiles").insert({
+        id: data.user.id,
+        email:formData.email,
+        full_name: formData.name,
+        user_type: formData.role, // "job_seeker" | "recruiter"
+      })
+      
+        if (profileError) {
+        alert(profileError.message)
+        return
+      }
+      console.log("[v0] Signup successful", data)
+      // Optional: redirect after signup
+      router.push("/login")
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "An error occurred")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (

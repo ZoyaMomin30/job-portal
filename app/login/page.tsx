@@ -8,19 +8,61 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import {useRouter} from 'next/navigation'
+import { supabase } from "@/lib/supabase/client"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  
+  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault()  //doesnt reload the whole page 
     setIsLoading(true)
-    // Simulate login process
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    setIsLoading(false)
-    console.log("[v0] Login attempt:", { email, password })
+
+    try {
+      //sign in with email and password
+      const {data, error} = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
+
+      if (error || !data.user) {
+        alert(error?.message)
+        return
+      }
+
+      //fetch profile to get user_type
+      const {data : profile} = await supabase
+      .from("profiles")
+      .select("user_type")
+      .eq("id", data.user.id)
+      .single()
+      
+      console.log("PROFILE FROM DB 👉", profile)
+      console.log("user type is ", profile?.user_type)
+      console.log("USER ID 👉", data.user.id)
+
+      if (!data.user) {
+      alert("No user returned")
+      return
+    }
+      //redirect based on role
+
+      router.push(
+        profile?.user_type === "job_seeker"
+          ? "/job-seeker/dashboard"
+          : "/recruiter/dashboard"
+      )
+
+    } catch (err) {
+      console.error("Unexpected error:", err)
+    alert("Something went wrong. Try again.")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (

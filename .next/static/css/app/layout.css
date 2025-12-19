@@ -1151,9 +1151,6 @@ font-weight: 100 900;
   .flex-1 {
     flex: 1;
   }
-  .flex-initial {
-    flex: 0 auto;
-  }
   .flex-shrink-0 {
     flex-shrink: 0;
   }
@@ -2832,6 +2829,9 @@ font-weight: 100 900;
   }
   .\[animation-direction\:reverse\] {
     animation-direction: reverse;
+  }
+  .running {
+    animation-play-state: running;
   }
   .slide-in-from-right {
     --tw-enter-translate-x: 100%;

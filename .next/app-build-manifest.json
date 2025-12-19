@@ -17,65 +17,60 @@
       "static/css/app/page.css",
       "static/chunks/app/page.js"
     ],
+    "/login/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/login/page.js"
+    ],
+    "/(protected)/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(protected)/layout.js"
+    ],
+    "/(protected)/recruiter/dashboard/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(protected)/recruiter/dashboard/page.js"
+    ],
     "/signup/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/signup/page.js"
     ],
-    "/recruiter/dashboard/page": [
+    "/(protected)/job-seeker/dashboard/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/recruiter/dashboard/page.js"
+      "static/chunks/app/(protected)/job-seeker/dashboard/page.js"
     ],
-    "/recruiter/post-job/page": [
+    "/(protected)/job-seeker/jobs/loading": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/recruiter/post-job/page.js"
+      "static/chunks/app/(protected)/job-seeker/jobs/loading.js"
     ],
-    "/recruiter/jobs/loading": [
+    "/(protected)/job-seeker/jobs/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/recruiter/jobs/loading.js"
+      "static/chunks/app/(protected)/job-seeker/jobs/page.js"
     ],
-    "/recruiter/jobs/page": [
+    "/(protected)/job-seeker/profile/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/recruiter/jobs/page.js"
+      "static/chunks/app/(protected)/job-seeker/profile/page.js"
     ],
-    "/recruiter/applicants/loading": [
+    "/(protected)/recruiter/jobs/loading": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/recruiter/applicants/loading.js"
+      "static/chunks/app/(protected)/recruiter/jobs/loading.js"
     ],
-    "/recruiter/applicants/page": [
+    "/(protected)/recruiter/jobs/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/recruiter/applicants/page.js"
+      "static/chunks/app/(protected)/recruiter/jobs/page.js"
     ],
-    "/job-seeker/dashboard/page": [
+    "/(protected)/recruiter/post-job/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/job-seeker/dashboard/page.js"
-    ],
-    "/job-seeker/jobs/loading": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/job-seeker/jobs/loading.js"
-    ],
-    "/job-seeker/jobs/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/job-seeker/jobs/page.js"
-    ],
-    "/job-seeker/profile/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/job-seeker/profile/page.js"
-    ],
-    "/login/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/login/page.js"
+      "static/chunks/app/(protected)/recruiter/post-job/page.js"
     ]
   }
 }

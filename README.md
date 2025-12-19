@@ -1,3 +1,24 @@
+# to setup with supabase
+
+-create supabase tables by running the queries 
+-create lib/supabase/client.ts : creates supabase client. This is Supabase’s official client for browser-side usage
+```
+
+```
+Just a helper function. So you don’t repeat Supabase setup everywhere. You import this wherever you need Supabase on the client
+
+database relationship
+```
+users 1 ──── * jobs
+users 1 ──── * applications
+jobs  1 ──── * applications
+```
+This allows:
+View all jobs
+View all applications per job
+View all applications by a user
+
+
 This project is not a job marketplace focused on mass applications.
 It is a structured hiring platform designed to help recruiters make faster and better hiring decisions.
 
@@ -205,4 +226,5 @@ Converts text into numerical form for similarity calculation.
 
 ### 7. Match Score Normalization
 - Similarity score is converted into a percentage
+
 

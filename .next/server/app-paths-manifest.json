@@ -1,7 +1,8 @@
 {
-  "/recruiter/applicants/page": "app/recruiter/applicants/page.js",
-  "/recruiter/jobs/page": "app/recruiter/jobs/page.js",
-  "/page": "app/page.js",
   "/signup/page": "app/signup/page.js",
-  "/login/page": "app/login/page.js"
+  "/(protected)/job-seeker/dashboard/page": "app/(protected)/job-seeker/dashboard/page.js",
+  "/(protected)/job-seeker/jobs/page": "app/(protected)/job-seeker/jobs/page.js",
+  "/(protected)/recruiter/dashboard/page": "app/(protected)/recruiter/dashboard/page.js",
+  "/(protected)/recruiter/post-job/page": "app/(protected)/recruiter/post-job/page.js",
+  "/(protected)/job-seeker/profile/page": "app/(protected)/job-seeker/profile/page.js"
 }
