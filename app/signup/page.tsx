@@ -50,16 +50,6 @@ export default function SignupPage() {
     // const supabase = createClient()
 
     try {
-      // const { data, error } = await supabase.auth.signUp({
-      //   email: formData.email,
-      //   password: formData.password,
-      //   options: {
-      //     data: {
-      //       full_name: formData.name,
-      //       user_type: formData.role, // "job_seeker" or "recruiter"
-      //     },
-      //   },
-      // })
       
       const { data, error } = await supabase.auth.signUp({
         email: formData.email,

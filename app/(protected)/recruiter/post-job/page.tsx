@@ -6,10 +6,69 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
-import { LayoutDashboard, BriefcaseIcon, Users, BarChart3, Settings, FileText, X } from "lucide-react"
+import { LayoutDashboard, BriefcaseIcon, Users, BarChart3, Settings, FileText, X, User } from "lucide-react"
 import Link from "next/link"
+import { supabase } from "@/lib/supabase/client"
+// import { error } from "console"
 
 export default function PostJobPage() {
+
+    const [isLoading, setIsLoading] = useState(false)
+    const [formData, setFormData] = useState({
+      title: "",
+      description:"",
+      company :"",
+      location :"",
+      job_type :"",
+      experience :"",
+      status :"",
+      })
+
+    const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault()  //doesnt reload the whole page 
+      setIsLoading(true)
+
+        // 1. Get logged-in user
+      const {
+          data: { user },
+          error: userError
+        } = await supabase.auth.getUser()
+
+      if (!user || userError) {
+        alert("You must be logged in")
+        setIsLoading(false)
+        return
+      }
+        const { data: job, error: jobError } = await supabase
+        .from("jobs")
+        .insert({
+          title: formData.title,
+          description: formData.description,
+          company: formData.company,
+          location: formData.location,
+          job_type: formData.job_type,
+          experience: formData.experience,
+          status: "open",
+          created_by: user.id,
+        })
+
+          if (jobError) {
+          console.error(jobError)
+          alert("Failed to post job")
+        } else {
+          alert("Job posted successfully ")
+          setFormData({
+            title: "",
+            description: "",
+            company: "",
+            location: "",
+            job_type: "",
+            experience: "",
+            status: ""
+          })
+        }
+    }
+
   const [activeNav, setActiveNav] = useState("post job")
   const [skills, setSkills] = useState(["React", "TypeScript", "Node.js"])
   const [newSkill, setNewSkill] = useState("")
@@ -77,6 +136,7 @@ export default function PostJobPage() {
         </header>
 
         <div className="p-6 max-w-4xl mx-auto">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>Job Details</CardTitle>
@@ -86,13 +146,14 @@ export default function PostJobPage() {
               {/* Job Title */}
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground">Job Title</label>
-                <Input placeholder="e.g., Senior Frontend Developer" />
+                <Input type="text" placeholder="e.g., Senior Frontend Developer" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} />
               </div>
 
               {/* Job Description */}
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground">Job Description</label>
-                <Textarea
+                <Textarea 
+                value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})}
                   placeholder="Describe the role, responsibilities, and what you're looking for in a candidate..."
                   rows={6}
                 />
@@ -123,7 +184,13 @@ export default function PostJobPage() {
               {/* Experience Level */}
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground">Experience Level</label>
-                <select className="w-full px-3 py-2 rounded-md border border-input bg-background text-foreground">
+                <select 
+                name="experience"
+                value={formData.experience}
+                onChange={(e) =>
+                  setFormData({ ...formData, experience: e.target.value })
+                }
+                className="w-full px-3 py-2 rounded-md border border-input bg-background text-foreground">
                   <option>Entry Level</option>
                   <option>Mid Level</option>
                   <option>Senior Level</option>
@@ -134,13 +201,18 @@ export default function PostJobPage() {
               {/* Location */}
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground">Location</label>
-                <Input placeholder="e.g., Remote, San Francisco, CA" />
+                <Input type = "location" placeholder="e.g., Remote, San Francisco, CA" value={formData.location} onChange={(e) => setFormData({...formData, location: e.target.value}) }/>
               </div>
 
               {/* Employment Type */}
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground">Employment Type</label>
-                <select className="w-full px-3 py-2 rounded-md border border-input bg-background text-foreground">
+                <select name="job_type"
+                value={formData.job_type}
+                onChange={(e) =>
+                  setFormData({ ...formData, job_type: e.target.value })
+                }
+                className="w-full px-3 py-2 rounded-md border border-input bg-background text-foreground">
                   <option>Full-time</option>
                   <option>Part-time</option>
                   <option>Contract</option>
@@ -150,15 +222,19 @@ export default function PostJobPage() {
 
               {/* Submit Button */}
               <div className="flex gap-3 pt-4">
-                <Button className="flex-1">Post Job</Button>
+                <Button type="submit" disabled={isLoading} className="flex-1">Post Job</Button>
                 <Button variant="outline" className="flex-1 bg-transparent">
                   Save as Draft
                 </Button>
               </div>
             </CardContent>
           </Card>
+          </form>
         </div>
       </main>
     </div>
   )
 }
+  function setIsLoading(arg0: boolean) {
+    throw new Error("Function not implemented.")
+  }

@@ -1,6 +1,117 @@
-"use client"
+// import { createServerClient } from "@supabase/ssr"
+// import { cookies } from "next/headers"
+// import { redirect } from "next/navigation"
+// import RecruiterDashboardClient from "./RecruiterDashboardClient"
+// import { createClient } from "@/lib/supabase/server"
 
-import { useState } from "react"
+// export default async function RecruiterDashboard() {
+//     const supabase = await createClient()
+
+//     const {
+//     data: { user },
+//     error: userError,
+//   } = await supabase.auth.getUser()
+//   if (userError || !user) {
+//     redirect("/login")
+//   }
+
+//     // Get profile
+//   const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single()
+
+//   if (profile?.user_type !== "recruiter") {
+//     redirect("/job-seeker/dashboard")
+//   }
+//     const { data: jobs, error:jobError } = await supabase
+//     .from("jobs")
+//     .select("*")
+//     .eq("recruiter_id", user.id)
+
+//     const jobsList = jobs || []
+
+//   // 4️⃣ Render client dashboard
+//   return (
+//     <RecruiterDashboardClient
+//       profile={profile}
+//       jobs={jobs ?? []}
+//     />
+//   )
+//  }
+
+// import { createServerClient } from "@supabase/ssr"
+// import { cookies } from "next/headers"
+// import { redirect } from "next/navigation"
+// import RecruiterDashboardClient from "./RecruiterDashboardClient"
+
+// export const dynamic = "force-dynamic"
+
+// export default async function RecruiterDashboard() {
+//   const cookieStore = await cookies()
+
+//   const supabase = createServerClient(
+//     process.env.NEXT_PUBLIC_SUPABASE_URL!,
+//     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+//     {
+//       cookies: {
+//         get(name: string) {
+//           return cookieStore.get(name)?.value
+//         },
+//         set(name: string, value: string, options: any) {
+//           try {
+//             cookieStore.set({ name, value, ...options })
+//           } catch {
+//             // Server components may be read-only
+//           }
+//         },
+//         remove(name: string, options: any) {
+//           try {
+//             cookieStore.set({ name, value: "", ...options })
+//           } catch {
+//             // ignore
+//           }
+//         },
+//       },
+//     }
+//   )
+
+//   // ✅ Auth check
+//   const {
+//     data: { user },
+//     error,
+//   } = await supabase.auth.getUser()
+
+//   console.log("Auth check:", { user, error })
+
+//   if (!user) {
+//     redirect("/login")
+//   }
+
+//   // ✅ Fetch jobs
+//   const { data: jobs } = await supabase
+//     .from("jobs")
+//     .select("*")
+//     .eq("created_by", user.id)
+//     .order("created_at", { ascending: false })
+
+//   // ✅ Fetch profile
+//   const { data: profile } = await supabase
+//     .from("profiles")
+//     .select("*")
+//     .eq("id", user.id)
+//     .single()
+
+//   return (
+//     <RecruiterDashboardClient
+//       user={user}
+//       full_name={profile?.full_name ?? "User"}
+//       jobs={jobs ?? []}
+//     />
+//   )
+// }
+
+
+
+// import { useState } from "react"
+import { redirect } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -17,21 +128,13 @@ import {
   TrendingUp,
 } from "lucide-react"
 import Link from "next/link"
+import { createClient } from "@/lib/supabase/server"
 
-// Dummy data
 const stats = [
   { title: "Total Jobs Posted", value: "24", icon: FileText, trend: "+12%" },
   { title: "Active Jobs", value: "18", icon: BriefcaseIcon, trend: "+5%" },
   { title: "Total Applicants", value: "342", icon: Users, trend: "+28%" },
   { title: "Shortlisted", value: "47", icon: TrendingUp, trend: "+15%" },
-]
-
-const jobs = [
-  { id: 1, title: "Senior Frontend Developer", location: "Remote", status: "Open", applicants: 45 },
-  { id: 2, title: "Product Designer", location: "San Francisco, CA", status: "Open", applicants: 32 },
-  { id: 3, title: "Backend Engineer", location: "New York, NY", status: "Open", applicants: 28 },
-  { id: 4, title: "Marketing Manager", location: "Austin, TX", status: "Closed", applicants: 19 },
-  { id: 5, title: "Data Scientist", location: "Remote", status: "Open", applicants: 41 },
 ]
 
 const recentApplicants = [
@@ -42,8 +145,31 @@ const recentApplicants = [
   { id: 5, name: "Lisa Anderson", job: "Senior Frontend Developer", score: 79, status: "New" },
 ]
 
-export default function RecruiterDashboard() {
-  const [activeNav, setActiveNav] = useState("dashboard")
+export default async function RecruiterDashboardClient() {
+  // const [activeNav, setActiveNav] = useState("dashboard")
+
+  const supabase = await createClient()
+
+    const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser()
+  if (userError || !user) {
+    redirect("/login")
+  }
+
+    // Get profile
+  const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single()
+
+  if (profile?.user_type !== "recruiter") {
+    redirect("/job-seeker/dashboard")
+  }
+    const { data: jobs, error:jobError } = await supabase
+    .from("jobs")
+    .select("*")
+    .eq("recruiter_id", user.id)
+
+    const jobsList = jobs || []
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -54,7 +180,7 @@ export default function RecruiterDashboard() {
           <p className="text-sm text-muted-foreground">Recruiter Portal</p>
         </div>
         <nav className="space-y-1 px-3">
-          {[
+          {/* {[
             { name: "Dashboard", icon: LayoutDashboard, href: "/recruiter/dashboard" },
             { name: "Post Job", icon: FileText, href: "/recruiter/post-job" },
             { name: "Jobs", icon: BriefcaseIcon, href: "/recruiter/jobs" },
@@ -75,7 +201,7 @@ export default function RecruiterDashboard() {
               <item.icon className="w-5 h-5" />
               {item.name}
             </Link>
-          ))}
+          ))} */}
         </nav>
       </aside>
 
@@ -86,11 +212,13 @@ export default function RecruiterDashboard() {
           <div className="flex items-center justify-between px-6 py-4">
             <div>
               <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
-              <p className="text-sm text-muted-foreground">Welcome back, Alex Johnson</p>
+              <p className="text-sm text-muted-foreground">Welcome back, {profile?.full_name?.split(" ")[0]}</p>
             </div>
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                <span className="text-sm font-semibold text-primary">AJ</span>
+                <span className="text-sm font-semibold text-primary">
+                  {profile?.full_name?.split(" ").map((n: string) => n[0]).join("").toUpperCase() || "U"}
+                </span>
               </div>
             </div>
           </div>
@@ -116,50 +244,52 @@ export default function RecruiterDashboard() {
           {/* Jobs Table */}
           <Card>
             <CardHeader>
-              <CardTitle>Active Jobs</CardTitle>
-              <CardDescription>Manage your job postings and view applicants</CardDescription>
+              <CardTitle>Your Jobs</CardTitle>
+              <CardDescription>Jobs posted by you</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-border">
-                      <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Job Title</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Location</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Status</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Applicants</th>
-                      <th className="text-right py-3 px-4 text-sm font-medium text-muted-foreground">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {jobs.map((job) => (
-                      <tr key={job.id} className="border-b border-border hover:bg-accent/50 transition-colors">
-                        <td className="py-3 px-4 text-sm font-medium text-foreground">{job.title}</td>
-                        <td className="py-3 px-4 text-sm text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            <MapPin className="w-3 h-3" />
-                            {job.location}
-                          </div>
-                        </td>
-                        <td className="py-3 px-4">
-                          <Badge variant={job.status === "Open" ? "default" : "secondary"}>{job.status}</Badge>
-                        </td>
-                        <td className="py-3 px-4 text-sm text-foreground">{job.applicants}</td>
-                        <td className="py-3 px-4">
-                          <div className="flex items-center justify-end gap-2">
+              {jobsList.length === 0 ? (
+                <p className="text-muted-foreground text-center py-8">No jobs posted yet.</p>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-border">
+                        <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Job Title</th>
+                        <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Location</th>
+                        <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Status</th>
+                        <th className="text-right py-3 px-4 text-sm font-medium text-muted-foreground">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {jobsList.map((job) => (
+                        <tr key={job.id} className="border-b border-border hover:bg-accent/50 transition-colors">
+                          <td className="py-3 px-4 font-medium">{job.title}</td>
+                          <td className="py-3 px-4">
+                            <div className="flex items-center gap-1">
+                              <MapPin className="w-3 h-3" />
+                              {job.location}
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <Badge variant={job.status === 'active' ? 'default' : 'secondary'}>
+                              {job.status}
+                            </Badge>
+                          </td>
+                          <td className="py-3 px-4 text-right">
                             <Button size="sm" variant="ghost">
                               <Eye className="w-4 h-4" />
                             </Button>
                             <Button size="sm" variant="ghost">
                               <Edit className="w-4 h-4" />
                             </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </CardContent>
           </Card>
 

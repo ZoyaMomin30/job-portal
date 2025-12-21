@@ -1,4 +1,4 @@
-"use client"
+// "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { BriefcaseIcon, BookmarkIcon, Clock, MapPin, TrendingUp } from "lucide-react"
 import Link from "next/link"
+import { supabase } from "@/lib/supabase/client"
 
 const appliedJobs = [
   {
@@ -45,7 +46,13 @@ const recommendedJobs = [
   { id: 3, title: "Frontend Lead", company: "DigitalCorp", location: "Austin, TX", match: 87 },
 ]
 
-export default function JobSeekerDashboard() {
+export default async function JobSeekerDashboard() {
+  const { data: jobs } = await supabase
+  .from("jobs")
+  .select("*")
+  .eq("status", "open")
+  .order("created_at", { ascending: false })
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
