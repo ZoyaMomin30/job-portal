@@ -31,6 +31,21 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/(protected)/recruiter/dashboard/page.js"
+    ],
+    "/(protected)/recruiter/post-job/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(protected)/recruiter/post-job/page.js"
+    ],
+    "/(protected)/recruiter/jobs/loading": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(protected)/recruiter/jobs/loading.js"
+    ],
+    "/(protected)/recruiter/jobs/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(protected)/recruiter/jobs/page.js"
     ]
   }
 }

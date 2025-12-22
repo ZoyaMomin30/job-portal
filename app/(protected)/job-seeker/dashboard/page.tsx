@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { BriefcaseIcon, BookmarkIcon, Clock, MapPin, TrendingUp } from "lucide-react"
 import Link from "next/link"
-import { supabase } from "@/lib/supabase/client"
+import { createClient } from "@/lib/supabase/server"
 
 const appliedJobs = [
   {
@@ -47,6 +47,8 @@ const recommendedJobs = [
 ]
 
 export default async function JobSeekerDashboard() {
+  const supabase = await createClient()
+
   const { data: jobs } = await supabase
   .from("jobs")
   .select("*")
