@@ -1,107 +1,137 @@
 "use client"
 
+import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Progress } from "@/components/ui/progress"
-import { BookmarkIcon, Upload, FileText, TrendingUp, CheckCircle2, AlertCircle } from "lucide-react"
-import Link from "next/link"
+import { Upload, FileText, Loader2, X } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
+import Header from "./../header"
 
 export default function JobSeekerProfilePage() {
+  const [file, setFile] = useState<File | null>(null)
+  const [uploading, setUploading] = useState(false)
+  const [uploadedResume, setUploadedResume] = useState<{
+    id: string
+    filename: string
+    uploadedAt: string
+    size: string
+  } | null>(null)
+  
+  const { toast } = useToast()
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0]
+    if (selectedFile) {
+      // Validate file type
+      const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+      const validExtensions = ['.pdf', '.doc', '.docx']
+      const fileExtension = selectedFile.name.substring(selectedFile.name.lastIndexOf('.')).toLowerCase()
+      
+      if (!validTypes.includes(selectedFile.type) && !validExtensions.includes(fileExtension)) {
+        toast({
+          title: "Invalid file type",
+          description: "Please upload a PDF or DOC/DOCX file",
+          variant: "destructive",
+        })
+        return
+      }
+
+      // Validate file size (5MB)
+      if (selectedFile.size > 5 * 1024 * 1024) {
+        toast({
+          title: "File too large",
+          description: "Please upload a file smaller than 5MB",
+          variant: "destructive",
+        })
+        return
+      }
+      setFile(selectedFile)
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    if (!file) {
+      toast({
+        title: "No file selected",
+        description: "Please select a resume to upload",
+        variant: "destructive",
+      })
+      return
+    }
+
+    setUploading(true)
+    
+    try {
+      const formData = new FormData()
+      formData.append("resume", file)
+
+      const response = await fetch("/api/resume/upload", {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || "Upload failed")
+      }
+
+      // Format file size
+      const formatFileSize = (bytes: number) => {
+        if (bytes < 1024) return bytes + " B"
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + " KB"
+        return (bytes / (1024 * 1024)).toFixed(2) + " MB"
+      }
+
+      setUploadedResume({
+        id: data.resumeId,
+        filename: file.name,
+        uploadedAt: new Date().toLocaleDateString('en-US', { 
+          year: 'numeric', 
+          month: 'short', 
+          day: 'numeric' 
+        }),
+        size: formatFileSize(file.size),
+      })
+
+      toast({
+        title: "Success!",
+        description: data.message || "Resume uploaded successfully",
+      })
+
+      setFile(null)
+    } catch (error: any) {
+      toast({
+        title: "Upload failed",
+        description: error.message || "Something went wrong",
+        variant: "destructive",
+      })
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const handleReplace = () => {
+    setUploadedResume(null)
+    setFile(null)
+  }
+
+  const handleRemoveFile = () => {
+    setFile(null)
+  }
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-card">
-        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-8">
-            <h1 className="text-xl font-bold text-foreground">Job Portal</h1>
-            <nav className="hidden md:flex items-center gap-6">
-              <Link
-                href="/job-seeker/dashboard"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Dashboard
-              </Link>
-              <Link
-                href="/job-seeker/jobs"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Browse Jobs
-              </Link>
-              <Link href="/job-seeker/profile" className="text-sm font-medium text-primary">
-                Profile
-              </Link>
-            </nav>
-          </div>
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm">
-              <BookmarkIcon className="w-4 h-4 mr-2" />
-              Saved
-            </Button>
-            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-              <span className="text-sm font-semibold text-primary">JD</span>
-            </div>
-          </div>
-        </div>
-      </header>
-
+      <Header />
       <div className="container mx-auto px-6 py-8 max-w-4xl space-y-6">
         {/* Profile Header */}
         <div>
           <h2 className="text-3xl font-bold text-foreground">Your Profile</h2>
           <p className="text-muted-foreground mt-1">Manage your profile and improve your ATS score</p>
         </div>
-
-        {/* ATS Score Overview */}
-        <Card className="border-primary/50">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>ATS Score</CardTitle>
-                <CardDescription>Your profile's Applicant Tracking System compatibility</CardDescription>
-              </div>
-              <div className="text-center">
-                <div className="text-4xl font-bold text-primary">85</div>
-                <p className="text-xs text-muted-foreground">out of 100</p>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Progress value={85} className="h-2" />
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="flex items-start gap-2">
-                <CheckCircle2 className="w-5 h-5 text-primary mt-0.5" />
-                <div>
-                  <p className="text-sm font-medium text-foreground">Resume uploaded</p>
-                  <p className="text-xs text-muted-foreground">Well-structured format detected</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-2">
-                <CheckCircle2 className="w-5 h-5 text-primary mt-0.5" />
-                <div>
-                  <p className="text-sm font-medium text-foreground">Skills complete</p>
-                  <p className="text-xs text-muted-foreground">12 skills added</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-2">
-                <AlertCircle className="w-5 h-5 text-muted-foreground mt-0.5" />
-                <div>
-                  <p className="text-sm font-medium text-foreground">Add portfolio links</p>
-                  <p className="text-xs text-muted-foreground">Showcase your work</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-2">
-                <AlertCircle className="w-5 h-5 text-muted-foreground mt-0.5" />
-                <div>
-                  <p className="text-sm font-medium text-foreground">Add certifications</p>
-                  <p className="text-xs text-muted-foreground">Boost credibility</p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Resume Upload */}
         <Card>
@@ -113,164 +143,109 @@ export default function JobSeekerProfilePage() {
             <CardDescription>Upload your resume for ATS analysis</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary/50 transition-colors cursor-pointer">
-              <Upload className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-              <p className="text-sm font-medium text-foreground mb-1">Drop your resume here or click to browse</p>
-              <p className="text-xs text-muted-foreground">Supports PDF, DOC, DOCX (Max 5MB)</p>
-            </div>
-            <div className="flex items-center justify-between p-3 border border-border rounded-lg bg-accent/20">
-              <div className="flex items-center gap-3">
-                <FileText className="w-8 h-8 text-primary" />
-                <div>
-                  <p className="text-sm font-medium text-foreground">John_Doe_Resume.pdf</p>
-                  <p className="text-xs text-muted-foreground">Uploaded 2 weeks ago • 245 KB</p>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <Button size="sm" variant="outline">
-                  View
-                </Button>
-                <Button size="sm" variant="ghost">
-                  Replace
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            {!uploadedResume ? (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <label
+                  htmlFor="resume-upload"
+                  className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary/50 transition-colors cursor-pointer block"
+                >
+                  <input
+                    id="resume-upload"
+                    type="file"
+                    accept=".pdf,.doc,.docx"
+                    onChange={handleFileChange}
+                    className="hidden"
+                    disabled={uploading}
+                  />
+                  <Upload className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-sm font-medium text-foreground mb-1">
+                    Drop your resume here or click to browse
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Supports PDF, DOC, DOCX (Max 5MB)
+                  </p>
+                </label>
 
-        {/* Personal Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Personal Information</CardTitle>
-            <CardDescription>Update your profile details</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">First Name</label>
-                <Input placeholder="John" defaultValue="John" />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">Last Name</label>
-                <Input placeholder="Doe" defaultValue="Doe" />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">Email</label>
-              <Input type="email" placeholder="john.doe@email.com" defaultValue="john.doe@email.com" />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">Phone</label>
-              <Input type="tel" placeholder="+1 (555) 123-4567" defaultValue="+1 (555) 123-4567" />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">Location</label>
-              <Input placeholder="San Francisco, CA" defaultValue="San Francisco, CA" />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">Professional Summary</label>
-              <Textarea
-                placeholder="Brief summary of your experience and career goals..."
-                rows={4}
-                defaultValue="Experienced Frontend Developer with 5+ years building modern web applications. Specialized in React, TypeScript, and performance optimization."
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Skills */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Skills</CardTitle>
-            <CardDescription>Add skills to improve your job matches</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex gap-2">
-              <Input placeholder="Add a skill (e.g., React, Python)" />
-              <Button>Add</Button>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {[
-                "React",
-                "TypeScript",
-                "Node.js",
-                "JavaScript",
-                "CSS",
-                "HTML",
-                "Git",
-                "REST APIs",
-                "GraphQL",
-                "Next.js",
-                "Tailwind CSS",
-                "MongoDB",
-              ].map((skill) => (
-                <Badge key={skill} variant="secondary" className="text-sm px-3 py-1">
-                  {skill}
-                </Badge>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* ATS Improvement Suggestions */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="w-5 h-5" />
-              Suggestions to Improve Your Score
-            </CardTitle>
-            <CardDescription>Follow these tips to increase your ATS compatibility</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {[
-                {
-                  title: "Add portfolio links",
-                  description: "Include GitHub, personal website, or project demos",
-                  impact: "+5 points",
-                },
-                {
-                  title: "List certifications",
-                  description: "Add relevant certifications or courses completed",
-                  impact: "+4 points",
-                },
-                {
-                  title: "Include keywords",
-                  description: "Use industry-specific keywords in your summary",
-                  impact: "+3 points",
-                },
-                {
-                  title: "Add work experience dates",
-                  description: "Ensure all positions have clear date ranges",
-                  impact: "+3 points",
-                },
-              ].map((suggestion, index) => (
-                <div key={index} className="flex items-start gap-3 p-3 border border-border rounded-lg">
-                  <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-xs font-semibold text-primary">{index + 1}</span>
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium text-foreground">{suggestion.title}</p>
-                      <Badge variant="outline" className="text-xs">
-                        {suggestion.impact}
-                      </Badge>
+                {file && (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 border border-border rounded-lg bg-accent/20">
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <FileText className="w-8 h-8 text-primary flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-foreground truncate">
+                            {file.name}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {(file.size / 1024).toFixed(2)} KB
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="ghost"
+                        onClick={handleRemoveFile}
+                        disabled={uploading}
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-1">{suggestion.description}</p>
+
+                    <div className="flex gap-2">
+                      <Button
+                        type="submit"
+                        disabled={uploading}
+                        className="flex-1"
+                      >
+                        {uploading ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Uploading...
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="w-4 h-4 mr-2" />
+                            Upload Resume
+                          </>
+                        )}
+                      </Button>
+                      <Button
+                        type="button"
+                        onClick={handleRemoveFile}
+                        variant="outline"
+                        disabled={uploading}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </form>
+            ) : (
+              <div className="flex items-center justify-between p-3 border border-border rounded-lg bg-accent/20">
+                <div className="flex items-center gap-3">
+                  <FileText className="w-8 h-8 text-primary" />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">
+                      {uploadedResume.filename}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Uploaded {uploadedResume.uploadedAt} • {uploadedResume.size}
+                    </p>
                   </div>
                 </div>
-              ))}
-            </div>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline">
+                    View
+                  </Button>
+                  <Button size="sm" variant="ghost" onClick={handleReplace}>
+                    Replace
+                  </Button>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
-
-        {/* Save Button */}
-        <div className="flex gap-3">
-          <Button className="flex-1">Save Changes</Button>
-          <Button variant="outline" className="flex-1 bg-transparent">
-            Cancel
-          </Button>
-        </div>
       </div>
     </div>
   )

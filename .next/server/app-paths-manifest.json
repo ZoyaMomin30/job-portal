@@ -1,6 +1,6 @@
 {
-  "/page": "app/page.js",
+  "/api/resume/upload/route": "app/api/resume/upload/route.js",
   "/login/page": "app/login/page.js",
-  "/(protected)/recruiter/post-job/page": "app/(protected)/recruiter/post-job/page.js",
-  "/(protected)/recruiter/dashboard/page": "app/(protected)/recruiter/dashboard/page.js"
+  "/(protected)/job-seeker/profile/page": "app/(protected)/job-seeker/profile/page.js",
+  "/(protected)/job-seeker/dashboard/page": "app/(protected)/job-seeker/dashboard/page.js"
 }

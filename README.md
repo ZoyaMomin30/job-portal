@@ -2,10 +2,21 @@
 
 -create supabase tables by running the queries 
 -create lib/supabase/client.ts : creates supabase client. This is Supabase’s official client for browser-side usage
+
+## supabase import 
+```
+import { createClient } from "@/lib/supabase/server"
+const supabase = await createClient()
+```
+to insert 
+```
 ```
 
-```
-Just a helper function. So you don’t repeat Supabase setup everywhere. You import this wherever you need Supabase on the client
+🎯 Interview gold (remember this line)
+
+You can now confidently say:
+
+“I built a backend pipeline that accepts resumes, stores originals in object storage, extracts text server-side, and prepares it for AI-based structured parsing.”
 
 database relationship
 ```
