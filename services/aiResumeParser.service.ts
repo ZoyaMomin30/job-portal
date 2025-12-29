@@ -1,29 +1,56 @@
-import { openai } from "@/lib/openai";
-
-export const parseResumeWithAI = async (resumeText: string) => {
+export async function parseResumeWithAI(resumeText: string) {
   const prompt = `
-You are an AI resume parser.
+You are a resume parser.
 
-Extract the following details from the resume text:
-- Skills (array of strings)
-- Education (array of strings)
-- Total years of experience (number)
-- Job roles / titles (array of strings)
+Extract the following fields from the resume text.
+Return ONLY valid JSON. No explanation. No markdown.
 
-Rules:
-- Return ONLY valid JSON
-- No explanations
-- Use empty arrays if not found
+Fields:
+- name (string or null)
+- email (string or null)
+- phone (string or null)
+- skills (array of strings)
+- education (array of strings)
+- experience (array of strings)
 
-Resume Text:
-"""${resumeText}"""
-`;
+Resume text:
+"""
+${resumeText}
+"""
+`
 
-  const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
-    messages: [{ role: "user", content: prompt }],
-    temperature: 0,
-  });
+  const response = await fetch("http://localhost:11434/api/generate", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "llama3.2",
+      prompt,
+      stream: false,
+    }),
+  })
 
-  return JSON.parse(response.choices[0].message.content!);
-};
+  if (!response.ok) {
+    throw new Error("Ollama request failed")
+  }
+
+  const data = await response.json()
+
+  if (!data.response) {
+    throw new Error("Empty response from Ollama")
+  }
+
+  // SAFETY: extract JSON only
+  const raw = data.response.trim()
+  const start = raw.indexOf("{")
+  const end = raw.lastIndexOf("}")
+
+  if (start === -1 || end === -1) {
+    throw new Error("No JSON found in Ollama response")
+  }
+
+  const jsonString = raw.slice(start, end + 1)
+
+  return JSON.parse(jsonString)
+}
