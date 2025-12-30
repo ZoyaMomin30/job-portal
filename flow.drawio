@@ -1,0 +1,25 @@
+<mxfile host="65bd71144e">
+    <diagram id="5AwX1o0E_D4mqBHzDutr" name="Page-1">
+        <mxGraphModel dx="846" dy="570" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="graph TD;&#xa;    Resume-upload--&gt;pdf-parsing;&#xa;    pdf-parsing--&gt;text-extraction;&#xa;    text-extraction--&gt;AI;&#xa;    AI--&gt;Text-to-json;" style="shadow=0;dashed=0;align=left;strokeWidth=1;shape=mxgraph.mermaid.abstract.mermaid;labelBackgroundColor=#ffffff;noLabel=1;theme=default;" parent="1" vertex="1">
+                    <mxGeometry x="360" y="190" width="100" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="3" value="graph TD;&#xa;    company-recruiter--&gt;upload-jobs;&#xa;    upload-jobs--&gt;jobseekers;&#xa;    jobseekers--&gt;apply;&#xa;    apply--&gt;AI-score-matching;&#xa;    AI-score-matching--&gt;ATS-processing;&#xa;    ATS-processing--&gt;highest-match;&#xa;    highest-match--&gt;schedule-interviews;" style="shadow=0;dashed=0;align=left;strokeWidth=1;shape=mxgraph.mermaid.abstract.mermaid;labelBackgroundColor=#ffffff;noLabel=1;theme=default;" parent="1" vertex="1">
+                    <mxGeometry x="120" y="180" width="200" height="320" as="geometry"/>
+                </mxCell>
+                <mxCell id="4" value="job-seeker side flow" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="345" y="150" width="130" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="5" value="recruiter side flow" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="165" y="130" width="120" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="6" value="graph TD;&#xa;    job-upload--&gt;show-to-job-seeker;&#xa;    show-to-job-seeker--&gt;job-seeker-apply;&#xa;    job-seeker-apply--&gt;score-matching;&#xa;    score-matching--&gt;ATS;" style="shadow=0;dashed=0;align=left;strokeWidth=1;shape=mxgraph.mermaid.abstract.mermaid;labelBackgroundColor=#ffffff;noLabel=1;theme=default;" vertex="1" parent="1">
+                    <mxGeometry x="520" y="40" width="250" height="460" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

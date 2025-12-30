@@ -87,6 +87,7 @@ export default function PostJobClient({ profile, jobs }: JobPostClientProps) {
             job_type: formData.job_type,
             experience: formData.experience,
             skills: skills, // Array of skills
+            created_by: profile.id,
             status: formData.status,
             recruiter_id: profile.id,
           },
@@ -123,6 +124,7 @@ export default function PostJobClient({ profile, jobs }: JobPostClientProps) {
             location: formData.location,
             job_type: formData.job_type,
             experience: formData.experience,
+            created_by: profile.id,
             skills: skills,
             status: "draft", // Save as draft
             recruiter_id: profile.id,

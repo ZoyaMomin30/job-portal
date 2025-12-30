@@ -8,6 +8,7 @@ import { BriefcaseIcon, BookmarkIcon, Clock, MapPin, TrendingUp } from "lucide-r
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 import Header from "./../header"
+import { redirect } from "next/navigation"
 
 const appliedJobs = [
   {
@@ -56,6 +57,21 @@ export default async function JobSeekerDashboard() {
   .eq("status", "open")
   .order("created_at", { ascending: false })
 
+    const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser()
+
+    if (userError || !user) {
+      redirect("/login")
+    }
+
+  const { data: profiles } = await supabase
+  .from("profiles")
+  .select("*")
+  .eq("id",user.id)
+  .single()
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -63,34 +79,9 @@ export default async function JobSeekerDashboard() {
       <div className="container mx-auto px-6 py-8 space-y-8">
         {/* Welcome Section */}
         <div>
-          <h2 className="text-3xl font-bold text-foreground">Welcome back, John!</h2>
+          <h2 className="text-3xl font-bold text-foreground">Welcome back, {profiles.full_name}</h2>
           <p className="text-muted-foreground mt-1">Here's your job search activity</p>
         </div>
-
-        {/* Profile Completeness */}
-        <Card className="border-primary/50">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>Complete Your Profile</CardTitle>
-                <CardDescription>Your profile is 75% complete</CardDescription>
-              </div>
-              <TrendingUp className="w-8 h-8 text-primary" />
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Progress value={75} className="h-2" />
-            <div className="flex flex-wrap gap-2">
-              <Badge variant="secondary">Resume uploaded</Badge>
-              <Badge variant="secondary">Skills added</Badge>
-              <Badge variant="outline">Add portfolio</Badge>
-              <Badge variant="outline">Add certifications</Badge>
-            </div>
-            <Button size="sm" asChild>
-              <Link href="/job-seeker/profile">Complete Profile</Link>
-            </Button>
-          </CardContent>
-        </Card>
 
         {/* Applied Jobs */}
         <Card>

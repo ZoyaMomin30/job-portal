@@ -10,6 +10,9 @@ const supabase = await createClient()
 ```
 to insert 
 ```
+const { error } = await supabase
+  .from('countries')
+  .insert({ id: 1, name: 'Mordor' })
 ```
 
 🎯 Interview gold (remember this line)
