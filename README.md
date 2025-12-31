@@ -8,12 +8,30 @@
 import { createClient } from "@/lib/supabase/server"
 const supabase = await createClient()
 ```
-to insert 
+## to insert 
 ```
 const { error } = await supabase
   .from('countries')
   .insert({ id: 1, name: 'Mordor' })
 ```
+
+## to use a table attribute
+
+```
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser()
+  
+  // Get profile
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .single()
+```
+
+
 
 🎯 Interview gold (remember this line)
 

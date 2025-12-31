@@ -1,7 +1,6 @@
 {
-  "/login/page": "app/login/page.js",
-  "/(protected)/recruiter/jobs/page": "app/(protected)/recruiter/jobs/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
   "/(protected)/job-seeker/jobs/page": "app/(protected)/job-seeker/jobs/page.js",
-  "/(protected)/recruiter/post-job/page": "app/(protected)/recruiter/post-job/page.js",
+  "/(protected)/job-seeker/profile/page": "app/(protected)/job-seeker/profile/page.js",
   "/(protected)/job-seeker/dashboard/page": "app/(protected)/job-seeker/dashboard/page.js"
 }

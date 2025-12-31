@@ -1,11 +1,11 @@
 export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
-import { createAdminClient } from "@/lib/supabase/server";
 import { extractTextFromResume } from "@/services/resumeParser.service";
 import { createClient } from "@/lib/supabase/server"
 import { cleanResumeText } from "@/lib/cleanResumeText";
 import { parseResumeWithAI } from "@/services/aiResumeParser.service";
+import { redirect } from "next/navigation";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_EXTENSIONS = [".pdf", ".docx", ".doc"];
@@ -91,14 +91,57 @@ export async function POST(req: Request) {
       );
     }
 
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser()
+  
+  if (userError || !user) {
+    redirect("/login")
+  }
+
+  // Get profile
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .single()
+
+
     // Insert into database
     console.log("💾 Inserting into database...");
-    const { data, error: dbError } = await supabase
+    // const { data, error: dbError } = await supabase
+    //   .from("resumes")
+    //   .insert({
+    //     file_path: filePath,
+    //     raw_text: resumeText,
+    //     status: "PARSED"
+    //   })
+    //   .select()
+    //   .single();
+
+    // if (dbError) {
+    //   console.error("❌ Database error:", dbError);
+    //   await supabase.storage.from("resumes").remove([filePath]);
+    //   throw new Error(`Database error: ${dbError.message}`);
+    // }
+
+    // console.log("✅ Success! Resume ID:", data.id);
+    const cleanText = cleanResumeText(resumeText);
+    console.log(cleanText)
+    const parsedData = await parseResumeWithAI(cleanText);
+    console.log(parsedData)
+    console.log(profile.id)
+
+        const { data, error: dbError } = await supabase
       .from("resumes")
       .insert({
+        user_id: profile.id,
         file_path: filePath,
         raw_text: resumeText,
-        status: "PARSED"
+        status: "PARSED",
+        parsed_data: parsedData,
+        filename: file.name,
       })
       .select()
       .single();
@@ -110,10 +153,6 @@ export async function POST(req: Request) {
     }
 
     console.log("✅ Success! Resume ID:", data.id);
-    const cleanText = cleanResumeText(resumeText);
-    console.log(cleanText)
-    const parsedData = await parseResumeWithAI(cleanText);
-    console.log(parsedData)
 
     return NextResponse.json({
       success: true,

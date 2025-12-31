@@ -12,6 +12,8 @@ interface Job {
   title: string
   location: string
   status: string
+  description: string
+  skills: string
   company?: string
   type?: string
   experience?: string
@@ -93,6 +95,7 @@ export default function BrowseJobsPage({ jobs }: JobBrowseProps) {
                   <div className="flex flex-wrap gap-2">
                     {job.type && <Badge variant="secondary">{job.type}</Badge>}
                     {job.experience && <Badge variant="secondary">{job.experience}</Badge>}
+                    
                     {job.match && <Badge variant="default">Match: {job.match}%</Badge>}
                     <Badge variant="outline">{job.status || "Open"}</Badge>
                   </div>
@@ -101,6 +104,22 @@ export default function BrowseJobsPage({ jobs }: JobBrowseProps) {
                       <div className="flex items-center gap-2">
                         <MapPin className="w-4 h-4" />
                         {job.location}
+                      </div>
+                    )}
+                    Description:
+                    {job.description && (
+                      <div className="flex items-center gap-2">
+                        
+                        {job.description}
+                      </div>
+                    )}
+                    <div className="text-primary">
+                    
+                    Skills
+                    </div>
+                    {job.skills && (
+                      <div className="flex items-center gap-2">
+                        {job.skills}
                       </div>
                     )}
                     <div className="flex items-center gap-2">
