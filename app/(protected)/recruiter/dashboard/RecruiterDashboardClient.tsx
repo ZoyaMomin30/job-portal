@@ -1,21 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState,useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  LayoutDashboard,
-  BriefcaseIcon,
-  Users,
-  BarChart3,
-  Settings,
-  FileText,
-  MapPin,
-  Eye,
-  Edit,
-  TrendingUp,
-} from "lucide-react"
+import { LayoutDashboard, BriefcaseIcon, Users, BarChart3, Settings, FileText, MapPin, Eye, Edit, TrendingUp } from "lucide-react"
 import Link from "next/link"
 
 const stats = [
@@ -23,14 +12,6 @@ const stats = [
   { title: "Active Jobs", value: "18", icon: BriefcaseIcon, trend: "+5%" },
   { title: "Total Applicants", value: "342", icon: Users, trend: "+28%" },
   { title: "Shortlisted", value: "47", icon: TrendingUp, trend: "+15%" },
-]
-
-const recentApplicants = [
-  { id: 1, name: "Sarah Chen", job: "Senior Frontend Developer", score: 92, status: "New" },
-  { id: 2, name: "Michael Rodriguez", job: "Product Designer", score: 88, status: "Shortlisted" },
-  { id: 3, name: "Emily Thompson", job: "Backend Engineer", score: 95, status: "New" },
-  { id: 4, name: "James Wilson", job: "Data Scientist", score: 84, status: "Shortlisted" },
-  { id: 5, name: "Lisa Anderson", job: "Senior Frontend Developer", score: 79, status: "New" },
 ]
 
 interface Job {
@@ -48,13 +29,31 @@ interface Profile {
   [key: string]: any
 }
 
+interface Application {
+  id: string
+  match_percentage: number
+  applied_at: string
+
+  profiles: {
+    full_name: string
+  }[]
+
+  jobs: {
+    title: string
+  }[]
+}
+
 interface RecruiterDashboardClientProps {
   profile: Profile
   jobs: Job[]
+  applications: Application[]
 }
 
-export default function RecruiterDashboardClient({ profile, jobs }: RecruiterDashboardClientProps) {
+export default function RecruiterDashboardClient({ profile, jobs, applications }: RecruiterDashboardClientProps) {
   const [activeNav, setActiveNav] = useState("dashboard")
+  const [apps, setApps] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -178,40 +177,66 @@ export default function RecruiterDashboardClient({ profile, jobs }: RecruiterDas
             </CardContent>
           </Card>
 
-          {/* Recent Applicants */}
+
           <Card>
-            <CardHeader>
-              <CardTitle>Recent Applicants</CardTitle>
-              <CardDescription>Latest candidates who applied to your positions</CardDescription>
-            </CardHeader>
-            <CardContent>
+          <CardHeader>
+            <CardTitle>Recent Applicants</CardTitle>
+            <CardDescription>
+              Latest candidates who applied to your positions
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent>
+            {applications.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                No applications yet.
+              </p>
+            ) : (
               <div className="space-y-4">
-                {recentApplicants.map((applicant) => (
+                {applications.map((applicant) => (
                   <div
                     key={applicant.id}
-                    className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer"
+                    className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-accent/50 transition-colors"
                   >
                     <div className="flex items-center gap-4">
                       <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
                         <span className="text-sm font-semibold text-primary">
-                          {applicant.name
+                          {applicant.profiles[0]?.full_name ?? "Unknown"
                             .split(" ")
                             .map((n) => n[0])
                             .join("")}
                         </span>
                       </div>
+
                       <div>
-                        <p className="font-medium text-foreground">{applicant.name}</p>
-                        <p className="text-sm text-muted-foreground">{applicant.job}</p>
+                        <p className="font-medium">
+                          {applicant.profiles[0]?.full_name ?? "Unknown"}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {applicant.jobs[0]?.title ?? "Unknown Job"}
+                        </p>
                       </div>
                     </div>
+
                     <div className="flex items-center gap-4">
                       <div className="text-right">
-                        <Badge variant={applicant.score >= 90 ? "default" : "secondary"} className="mb-1">
-                          ATS {applicant.score}
+                        <Badge
+                          variant={
+                            applicant.match_percentage >= 75
+                              ? "default"
+                              : "secondary"
+                          }
+                          className="mb-1"
+                        >
+                          ATS {applicant.match_percentage}%
                         </Badge>
-                        <p className="text-xs text-muted-foreground">{applicant.status}</p>
+
+                        <p className="text-xs text-muted-foreground">
+                          Applied{" "}
+                          {new Date(applicant.applied_at).toLocaleDateString()}
+                        </p>
                       </div>
+
                       <Button size="sm" variant="outline">
                         View
                       </Button>
@@ -219,8 +244,9 @@ export default function RecruiterDashboardClient({ profile, jobs }: RecruiterDas
                   </div>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+            )}
+          </CardContent>
+        </Card>
         </div>
       </main>
     </div>

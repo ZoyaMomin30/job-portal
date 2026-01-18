@@ -11,10 +11,31 @@
       "static/chunks/main-app.js",
       "static/chunks/app/loading.js"
     ],
+    "/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/page.css",
+      "static/chunks/app/page.js"
+    ],
+    "/login/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/login/page.js"
+    ],
     "/(protected)/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/(protected)/layout.js"
+    ],
+    "/(protected)/recruiter/dashboard/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(protected)/recruiter/dashboard/page.js"
+    ],
+    "/(protected)/job-seeker/dashboard/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(protected)/job-seeker/dashboard/page.js"
     ],
     "/(protected)/job-seeker/jobs/loading": [
       "static/chunks/webpack.js",
@@ -26,25 +47,30 @@
       "static/chunks/main-app.js",
       "static/chunks/app/(protected)/job-seeker/jobs/page.js"
     ],
-    "/(protected)/job-seeker/dashboard/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(protected)/job-seeker/dashboard/page.js"
-    ],
     "/(protected)/job-seeker/profile/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/(protected)/job-seeker/profile/page.js"
+    ],
+    "/api/apply/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/apply/route.js"
     ],
     "/api/resume/upload/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/api/resume/upload/route.js"
     ],
-    "/_not-found/page": [
+    "/(protected)/recruiter/jobs/loading": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/_not-found/page.js"
+      "static/chunks/app/(protected)/recruiter/jobs/loading.js"
+    ],
+    "/(protected)/recruiter/jobs/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(protected)/recruiter/jobs/page.js"
     ]
   }
 }

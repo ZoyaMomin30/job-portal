@@ -23,12 +23,50 @@ interface Job {
   [key: string]: any
 }
 
-interface JobBrowseProps {
-  jobs: Job[]
+interface Resume {
+  id: string
+  title: string
+  file_path: string
+  raw_text: string
+  parsed_data: JSON
+  user_id: string
+  created_at: string
+  filename: string
+  size: string
 }
 
-export default function BrowseJobsPage({ jobs }: JobBrowseProps) {
+interface JobBrowseProps {
+  jobs: Job[]
+  resumes: Resume[]
+}
+
+export default function BrowseJobsPage({ jobs, resumes }: JobBrowseProps) {
   const [saved, setSaved] = useState<number[]>([])
+
+const applyForJob = async (jobId: number) => {
+
+  try {
+    const res = await fetch("/api/apply", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jobId,
+        resumeId: resumes[0].id,
+      }),
+    })
+
+    const data = await res.json()
+
+    if (!res.ok) {
+      alert(data.error)
+      return
+    }
+
+    alert(`Applied successfully! Match: ${data.matchPercentage}%`)
+  } catch {
+    alert("Something went wrong")
+  }
+}
 
   const toggleSave = (jobId: number) => {
     setSaved((prev) => (prev.includes(jobId) ? prev.filter((id) => id !== jobId) : [...prev, jobId]))
@@ -127,7 +165,7 @@ export default function BrowseJobsPage({ jobs }: JobBrowseProps) {
                       Posted {job.posted || getPostedTime(job.created_at)}
                     </div>
                   </div>
-                  <Button className="w-full">Apply Now</Button>
+                  <Button onClick={() => applyForJob(job.id)} className="w-full">Apply Now</Button>
                 </CardContent>
               </Card>
             ))}

@@ -32,10 +32,35 @@ export default async function RecruiterDashboardPage() {
   
   const jobsList = jobs || []
 
+  // 5️⃣ Fetch applications for recruiter's jobs
+const { data: applications, error: applicationsError } = await supabase
+  .from("applications")
+  .select(`
+    id,
+    match_percentage,
+    applied_at,
+    profiles (
+      full_name
+    ),
+    jobs (
+      title
+    )
+  `)
+  .in(
+    "job_id",
+    jobs?.map((job) => job.id) || []
+  )
+  .order("applied_at", { ascending: false })
+
+if (applicationsError) {
+  console.error("Error fetching applications:", applicationsError)
+  console.log(applicationsError)
+}
   return (
-    <RecruiterDashboardClient 
-      profile={profile} 
-      jobs={jobsList}
+    <RecruiterDashboardClient
+    profile={profile}
+    jobs={jobsList}
+    applications={applications || []}
     />
   )
 }

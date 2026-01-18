@@ -1,18 +1,17 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { motion } from "framer-motion"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { supabase } from "@/lib/supabase/client"
+import { createClient} from "@/lib/supabase/client"
 import {useRouter } from 'next/navigation'
 
-
 export default function SignupPage() {
+  
   const router = useRouter()
   const [formData, setFormData] = useState({
     name: "",
@@ -32,6 +31,7 @@ export default function SignupPage() {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
+    const supabase = createClient()
     e.preventDefault()  //prevent page reload 
 
       if (formData.password !== formData.confirmPassword) {
@@ -46,8 +46,6 @@ export default function SignupPage() {
 
     setIsLoading(true)
     setError(null)
-
-    // const supabase = createClient()
 
     try {
       

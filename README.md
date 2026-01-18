@@ -30,8 +30,18 @@ const { error } = await supabase
     .eq("id", user.id)
     .single()
 ```
+## to use supabase in clientside and fetch details. 
+```
+import { createClient } from "@/lib/supabase/client"
+const supabase = createClient()
 
-
+//fetch user data 
+const {data : profile} = await supabase
+.from("profiles")
+.select("user_type")
+.eq("id", data.user.id)
+.single()
+```
 
 🎯 Interview gold (remember this line)
 
